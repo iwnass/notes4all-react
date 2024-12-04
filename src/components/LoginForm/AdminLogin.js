@@ -55,18 +55,18 @@ export default function AdminLogin({ onClose }) {
   };
 
   return (
-    <div className="max-w-xl w-full m-[10rem] p-6 bg-neutral-800 rounded-lg shadow-md relative">
+    <div className="max-w-2xl w-full mr-[20rem] m-[10rem] p-8 bg-neutral-800 rounded-lg shadow-lg relative">
       <button 
         onClick={onClose} 
         className="absolute top-4 right-4 text-white hover:text-gray-300"
       >
         <X className="h-6 w-6" />
       </button>
-      <h2 className="text-2xl font-bold mb-6 text-center text-white">Admin Login</h2>
-      <form onSubmit={handleLogin} className="space-y-4">
+      <h2 className="text-3xl font-bold mb-8 text-center text-white">Admin Login</h2>
+      <form onSubmit={handleLogin} className="space-y-6">
         <div>
           <label htmlFor="username" className="block mb-2 flex items-center text-white">
-            <User className="h-4 w-4 mr-2 inline" /> Username
+            <User className="h-5 w-5 mr-2 inline" /> Username
           </label>
           <input
             id="username"
@@ -74,7 +74,7 @@ export default function AdminLogin({ onClose }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Admin username"
-            className="w-full px-3 py-2 text-gray-800 border rounded-md"
+            className="w-full px-4 py-3 text-gray-800 border rounded-md"
             disabled={isLoading}
           />
         </div>

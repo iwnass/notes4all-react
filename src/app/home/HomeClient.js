@@ -8,4 +8,4 @@ export default function HomeClient() {
             <h1 className="text-3xl font-bold text-center p-10 italic">Notes4All</h1>
         </div>
     );
-};
+}; 
