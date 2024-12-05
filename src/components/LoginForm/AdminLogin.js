@@ -51,7 +51,7 @@ export default function AdminLogin({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+    <div className=" fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
       <div 
         className="w-full max-w-xl px-8 py-10 bg-neutral-800 rounded-lg shadow-lg relative transform transition-transform duration-300 origin-top animate-slide-down"
       >
