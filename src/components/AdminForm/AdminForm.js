@@ -98,13 +98,13 @@ export default function FileUploadForm() {
   };
 
   return (
-    <div className="max-w-full p-6 bg-neutral-700">
-      <h2 className="text-2xl font-bold mb-6 flex">
+    <div className="max-w-full p-6 bg-neutral-800">
+      <h2 className="text-2xl text-gray-200 font-bold mb-6 flex">
         <FileText className="mr-2" /> File Upload Form
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="filename" className="block mb-2 font-medium">
+          <label htmlFor="filename" className="block mb-2 font-medium text-gray-200">
             Filename
           </label>
           <input
@@ -119,7 +119,7 @@ export default function FileUploadForm() {
         </div>
         
         <div>
-          <label htmlFor="description" className="block mb-2 font-medium">
+          <label htmlFor="description" className="block mb-2 font-medium text-gray-200">
             Description
           </label>
           <textarea
@@ -134,7 +134,7 @@ export default function FileUploadForm() {
         </div>
 
         <div className="relative">
-          <label className="block mb-2 font-medium">
+          <label className="block mb-2 font-medium text-gray-200">
             Select Category
           </label>
           <div className="relative">
@@ -166,7 +166,7 @@ export default function FileUploadForm() {
         </div>
         
         <div>
-          <label htmlFor="file-upload" className="block mb-2 font-medium">
+          <label htmlFor="file-upload" className="block mb-2 font-medium text-gray-200">
             Upload File
           </label>
           <div className="flex items-center">

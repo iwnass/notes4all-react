@@ -43,8 +43,8 @@ export default function FileListPreview() {
   };
 
   return (
-    <div className="max-w-full p-6 bg-neutral-700">
-      <h2 className="text-2xl font-bold mb-6 flex">
+    <div className="max-w-full p-6 bg-neutral-800">
+      <h2 className="text-2xl text-gray-200 font-bold mb-6 flex">
         <File className="mr-2" /> Uploaded Files
       </h2>
 
