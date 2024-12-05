@@ -47,7 +47,7 @@ const Subjects = () => {
     }
 
     return (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 text-black px-5">
             {options.map((option, index) => {
                 const isOpen = showDropdown[index]
                 const dropdownHeight = isOpen ? dropdownHeights[index] : 0
