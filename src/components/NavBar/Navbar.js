@@ -8,9 +8,8 @@ export default function NavBar() {
 
   return (
     <>
-      <nav className="flex items-center justify-between p-4 bg-neutral-800">
+      <nav className="flex items-center justify-between p-4 bg-black">
         <div className="flex items-center space-x-6 ml-6">
-          <a href="/" className="text-white border border-white p-2 rounded-lg hover:bg-white hover:text-neutral-800 transition ease-in duration-300">Home</a>
           <button 
             onClick={() => setShowAdminLogin(true)}
             className="text-white border border-white p-2 rounded-lg hover:bg-white hover:text-neutral-800 transition ease-in duration-300"

@@ -3,9 +3,9 @@ import NavBar from "@/components/NavBar/Navbar";
 
 export default function HomeClient() {
     return (
-        <div>
+        <div className="bg-neutral-800 min-h-screen">
             <NavBar />
-            <h1 className="text-3xl font-bold text-center p-10 italic">Notes4All</h1>
+            <h1 className="text-3xl text-white font-bold text-center p-10 italic">Notes4All</h1>
         </div>
     );
 }; 
