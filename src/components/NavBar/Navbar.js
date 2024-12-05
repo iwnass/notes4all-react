@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import AdminLogin from "../LoginForm/AdminLogin";
+import { UserCog, CalendarDays } from "lucide-react";
 
 export default function NavBar() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -14,9 +15,9 @@ export default function NavBar() {
             onClick={() => setShowAdminLogin(true)}
             className="text-white border border-white p-2 rounded-lg hover:bg-white hover:text-neutral-800 transition ease-in duration-300"
           >
-            Admin
+            <UserCog />
           </button>
-          <a href="/" className="text-white border border-white p-2 rounded-lg hover:bg-white hover:text-neutral-800 transition ease-in duration-300">Schedule</a>
+          <a href="/" className="text-white border border-white p-2 rounded-lg hover:bg-white hover:text-neutral-800 transition ease-in duration-300"><CalendarDays /></a>
         </div>
         <div>
           <input
