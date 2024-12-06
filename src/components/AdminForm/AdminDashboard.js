@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useState } from 'react';
-// Make sure to import all the necessary icons at the top of your file
+import React, { useState, useEffect } from 'react';
 import { 
   File, 
   Eye, 
   Trash2, 
-  ChevronDown,
   Upload,
   X,
   FileText, 
-  Book,           // For algebra
-  Code,           // For programming
-  Network,        // For networks
-  Omega,          // For Greek language
-  Database,       // For information systems
+  Book,
+  Code,
+  Network,
+  Omega,
+  Database,
 } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 
 export function FileUploadForm({ onFileUpload }) {
   const [filename, setFilename] = useState('');
@@ -24,7 +21,7 @@ export function FileUploadForm({ onFileUpload }) {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState(null);
   const [category, setCategory] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Categories for file upload
   const categories = [
@@ -51,7 +48,7 @@ export function FileUploadForm({ onFileUpload }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!filename || !description || !uploadedFile || !category) {
@@ -59,25 +56,40 @@ export function FileUploadForm({ onFileUpload }) {
       return;
     }
 
-    // Create file object for dashboard
-    const newFile = {
-      id: uuidv4(),
-      filename,
-      description,
-      category,
-      file: uploadedFile,
-      uploadDate: new Date()
-    };
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+    formData.append('filename', filename);
+    formData.append('description', description);
+    formData.append('category', category);
 
-    // Call parent component's upload handler
-    onFileUpload(newFile);
-    
-    // Reset form
-    setFilename('');
-    setDescription('');
-    setUploadedFile(null);
-    setFilePreviewUrl(null);
-    setCategory('');
+    try {
+      setIsUploading(true);
+      const response = await fetch('/api/files/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('File upload failed');
+      }
+
+      const responseData = await response.json();
+
+      // Call parent component's upload handler
+      onFileUpload(responseData);
+      
+      // Reset form
+      setFilename('');
+      setDescription('');
+      setUploadedFile(null);
+      setFilePreviewUrl(null);
+      setCategory('');
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('File upload failed');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const removeFile = () => {
@@ -123,111 +135,74 @@ export function FileUploadForm({ onFileUpload }) {
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="filename" className="block mb-2 font-medium text-gray-200">
-            Filename
-          </label>
+          <label htmlFor="filename" className="block text-gray-300 mb-2">File Name</label>
           <input
             type="text"
             id="filename"
             value={filename}
             onChange={(e) => setFilename(e.target.value)}
-            placeholder="Enter filename"
-            className="w-full px-3 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className="w-full p-2 bg-neutral-700 text-white rounded-md"
+            placeholder="Enter file name"
           />
         </div>
-        
+
         <div>
-          <label htmlFor="description" className="block mb-2 font-medium text-gray-200">
-            Description
-          </label>
+          <label htmlFor="description" className="block text-gray-300 mb-2">Description</label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the file contents"
-            rows="3"
-            className="w-full px-3 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className="w-full p-2 bg-neutral-700 text-white rounded-md"
+            placeholder="Enter file description"
           />
         </div>
 
-        <div className="relative">
-          <label className="block mb-2 font-medium text-gray-200">
-            Select Category
-          </label>
-          <div className="relative">
+        <div>
+          <label htmlFor="category" className="block text-gray-300 mb-2">Category</label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full p-2 bg-neutral-700 text-white rounded-md"
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="file" className="block text-gray-300 mb-2">Upload File</label>
+          <input
+            type="file"
+            id="file"
+            onChange={handleFileChange}
+            className="w-full p-2 bg-neutral-700 text-white rounded-md file:mr-4 file:rounded-md file:border-0 file:bg-orange-600 file:text-white file:px-4 file:py-2"
+          />
+        </div>
+
+        {filePreviewUrl && (
+          <div className="mt-4">
+            {renderFilePreview()}
             <button
               type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full px-3 py-2 border rounded-md text-gray-800 bg-white flex items-center justify-between"
+              onClick={removeFile}
+              className="mt-2 w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
             >
-              {category ? categories.find(cat => cat.id === category)?.name : 'Select Category'}
-              <ChevronDown className="h-4 w-4" />
+              <X className="mr-2 inline" /> Remove File
             </button>
-            {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border text-black rounded-md shadow-lg">
-                {categories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    onClick={() => {
-                      setCategory(cat.id);
-                      setIsDropdownOpen(false);
-                    }}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {cat.name}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div>
-          <label htmlFor="file-upload" className="block mb-2 font-medium text-gray-200">
-            Upload File
-          </label>
-          <div className="flex items-center">
-            <input
-              type="file"
-              id="file-upload"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <label 
-              htmlFor="file-upload" 
-              className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition"
-            >
-              <Upload className="mr-2" /> Choose File
-            </label>
-            {uploadedFile && (
-              <div className="ml-4 flex items-center">
-                <span className="mr-2 text-sm truncate max-w-[150px]">{uploadedFile.name}</span>
-                <button 
-                  type="button"
-                  onClick={removeFile}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {uploadedFile && (
-          <div className="mt-4">
-            <h3 className="font-medium mb-2">File Preview</h3>
-            {renderFilePreview()}
           </div>
         )}
         
         <button
           type="submit"
-          className="w-full bg-orange-600 text-white py-2 rounded-md hover:bg-orange-700 transition ease-in duration-150 flex items-center justify-center"
+          disabled={isUploading}
+          className={`w-full bg-orange-600 text-white py-2 rounded-md hover:bg-orange-700 transition ease-in duration-150 flex items-center justify-center ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <Upload className="mr-2" /> Upload File
+          {isUploading ? 'Uploading...' : (<><Upload className="mr-2" /> Upload File</>)}
         </button>
       </form>
     </div>
@@ -236,7 +211,61 @@ export function FileUploadForm({ onFileUpload }) {
 
 export function AdminDashboard() {
   const [files, setFiles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/files');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch files');
+        }
+
+        const data = await response.json();
+        setFiles(data.map(file => ({
+          ...file,
+          uploadDate: new Date(file.uploadDate)
+        })));
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch files:', err);
+        setError('Failed to load files');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, []);
+
+  const handleFileDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/files/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete file');
+      }
+
+      setFiles(files.filter(file => file.id !== id));
+    } catch (err) {
+      console.error('Failed to delete file:', err);
+      alert('Failed to delete file');
+    }
+  };
+
+  const handleFilePreview = (file) => {
+    // Open file in new tab
+    window.open(file.path, '_blank');
+  };
+
+  const handleFileUpload = (newFile) => {
+    setFiles([...files, newFile]);
+  };
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -255,21 +284,6 @@ export function AdminDashboard() {
     }
   };
 
-  const handleFilePreview = (file) => {
-    if (file) {
-      const url = URL.createObjectURL(file);
-      window.open(url, '_blank');
-    }
-  };
-
-  const handleFileDelete = (id) => {
-    setFiles(files.filter(file => file.id !== id));
-  };
-
-  const handleFileUpload = (newFile) => {
-    setFiles([...files, newFile]);
-  };
-
   return (
     <div className="flex">
       <div className="w-1/3">
@@ -280,7 +294,15 @@ export function AdminDashboard() {
           <File className="mr-2" /> Uploaded Files
         </h2>
 
-        {files.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-6">
+            Loading files...
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-6">
+            {error}
+          </div>
+        ) : files.length === 0 ? (
           <div className="text-center text-gray-400 py-6">
             No files uploaded yet
           </div>
