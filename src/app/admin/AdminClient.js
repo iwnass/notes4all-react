@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import NavBar from '@/components/NavBar/Navbar';
-import AdminForm from '@/components/AdminForm/AdminForm';
-import FileDashboard from '@/components/FileDashboard/FileDashboard';
+import AdminDashboard from '@/components/AdminForm/AdminDashboard';
+
 
 export default function AdminClient() {
   const router = useRouter();
@@ -42,9 +42,7 @@ export default function AdminClient() {
         </div>
         
         
-        <AdminForm />
-        <hr className="my-6 border-gray-500" />
-        <FileDashboard  />
+        <AdminDashboard />
         
       </div>
       </div>

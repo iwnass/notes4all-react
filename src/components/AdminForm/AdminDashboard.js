@@ -1,9 +1,24 @@
 "use client";
 
 import React, { useState } from 'react';
-import { FileText, Upload, X, File, ChevronDown } from 'lucide-react';
+// Make sure to import all the necessary icons at the top of your file
+import { 
+  File, 
+  Eye, 
+  Trash2, 
+  ChevronDown,
+  Upload,
+  X,
+  FileText, 
+  Book,           // For algebra
+  Code,           // For programming
+  Network,        // For networks
+  Omega,          // For Greek language
+  Database,       // For information systems
+} from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 
-export default function FileUploadForm() {
+export function FileUploadForm({ onFileUpload }) {
   const [filename, setFilename] = useState('');
   const [description, setDescription] = useState('');
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -13,11 +28,11 @@ export default function FileUploadForm() {
 
   // Categories for file upload
   const categories = [
-    { id: 'documents', name: 'Documents' },
-    { id: 'presentations', name: 'Presentations' },
-    { id: 'spreadsheets', name: 'Spreadsheets' },
-    { id: 'images', name: 'Images' },
-    { id: 'other', name: 'Other Files' }
+    { id: 'Άλγεβρα', name: 'Άλγεβρα' },
+    { id: 'Προγραμματισμός', name: 'Προγραμματισμός' },
+    { id: 'Δίκτυα', name: 'Δίκτυα' },
+    { id: 'Νέα Ελληνικά', name: 'Νέα Ελληνικά' },
+    { id: 'Πληροφοριακά Συστήματα', name: 'Πληροφοριακά Συστήματα' }
   ];
 
   const handleFileChange = (e) => {
@@ -44,14 +59,18 @@ export default function FileUploadForm() {
       return;
     }
 
-    // Create FormData for file upload
-    const formData = new FormData();
-    formData.append('filename', filename);
-    formData.append('description', description);
-    formData.append('category', category);
-    formData.append('file', uploadedFile);
+    // Create file object for dashboard
+    const newFile = {
+      id: uuidv4(),
+      filename,
+      description,
+      category,
+      file: uploadedFile,
+      uploadDate: new Date()
+    };
 
-    console.log('Submitting:', { filename, description, category, uploadedFile });
+    // Call parent component's upload handler
+    onFileUpload(newFile);
     
     // Reset form
     setFilename('');
@@ -214,3 +233,108 @@ export default function FileUploadForm() {
     </div>
   );
 }
+
+export function AdminDashboard() {
+  const [files, setFiles] = useState([]);
+
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case 'Άλγεβρα':
+        return <Book className="h-6 w-6 text-blue-500" />;
+      case 'Προγραμματισμός':
+        return <Code className="h-6 w-6 text-green-500" />;
+      case 'Δίκτυα':
+        return <Network className="h-6 w-6 text-green-700" />;
+      case 'Νέα Ελληνικά':
+        return <Omega className="h-6 w-6 text-purple-500" />;
+      case 'Πληροφοριακά Συστήματα':
+        return <Database className="h-6 w-6 text-orange-500" />;
+      default:
+        return <File className="h-6 w-6 text-gray-500" />;
+    }
+  };
+
+  const handleFilePreview = (file) => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleFileDelete = (id) => {
+    setFiles(files.filter(file => file.id !== id));
+  };
+
+  const handleFileUpload = (newFile) => {
+    setFiles([...files, newFile]);
+  };
+
+  return (
+    <div className="flex">
+      <div className="w-1/3">
+        <FileUploadForm onFileUpload={handleFileUpload} />
+      </div>
+      <div className="w-2/3 max-w-full p-6 bg-neutral-800">
+        <h2 className="text-2xl text-gray-200 font-bold mb-6 flex">
+          <File className="mr-2" /> Uploaded Files
+        </h2>
+
+        {files.length === 0 ? (
+          <div className="text-center text-gray-400 py-6">
+            No files uploaded yet
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {files.map((fileItem) => (
+              <div 
+                key={fileItem.id} 
+                className="bg-neutral-600 p-4 rounded-md flex items-center justify-between hover:bg-neutral-500 transition"
+              >
+                <div className="flex items-center space-x-4 flex-grow">
+                  <div className="flex-shrink-0">
+                    {getCategoryIcon(fileItem.category)}
+                  </div>
+                  
+                  <div className="flex-grow min-w-0">
+                    <div className="font-medium text-white truncate">
+                      {fileItem.filename}
+                    </div>
+                    <div className="text-sm text-gray-300 truncate">
+                      {fileItem.description}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {fileItem.uploadDate.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-400 uppercase">
+                      {fileItem.category}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 ml-4">
+                  <button
+                    onClick={() => handleFilePreview(fileItem.file)}
+                    className="text-white hover:text-blue-300 transition"
+                    title="Preview File"
+                  >
+                    <Eye className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => handleFileDelete(fileItem.id)}
+                    className="text-white hover:text-red-400 transition"
+                    title="Delete File"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default AdminDashboard;
